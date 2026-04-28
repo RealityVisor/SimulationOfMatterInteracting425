@@ -1,11 +1,18 @@
-let isRunning = true;
-
-
-
+let isRunning =true;
+let Objects = [];
+//pause button space bar
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        isRunning = !isRunning; 
+        if (isRunning) {
+            MoveEverything();
+        }
+    }
+});
 class Matter{
     static numOfObjects = 0;
     constructor(mass,width,height,XPos,YPos,YSpeed,XSpeed){
-        this.numOfObjects++;
+        Matter.numOfObjects++;
         this.mass = mass; // in kilograms
         this.width = width; // in pixels
         this.height = height; // in pixels
@@ -15,18 +22,39 @@ class Matter{
         this.XSpeed = XSpeed;
         this.img = document.createElement('img');
         this.img.src="BlackDot.png";
+        this.img.style.position = 'absolute';
+        this.img.style.width = `${this.width}px`;
+        this.img.style.height = `${this.height}px`;
+        document.body.appendChild(this.img);
+        this.img.style.transform = `translate(${this.Xpos}px, ${this.YPos}px)`;
     }
 }
 
 Simulation();
-while(isRunning){
+
+
+/*while(true){
+    if (isRunning){
+    let startTime = Date.now();
     MoveEverything();
-}
+    let endTime = Date.now();
+    let timeTaken = endTime - startTime;
+    if (timeTaken < 1600){
+        setTimeout(() => {
+            MoveEverything();
+        }, 1600 - timeTaken);
+    }
+    }
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space') {
+            isRunning = !isRunning;
+        }
+    });
+}*/
 
 function Simulation(){
-    let Objects = [];
-    const Matter1 = new Matter(40000000, 40,40, 800,450,0,0);
-    const Matter2 = new Matter(.5,20,20, 600, 450, 0,0);
+    let Matter1 = new Matter(400000000000, 40,40, 1000,450,0,0);
+    let Matter2 = new Matter(.5,20,20, 800, 450, -.2,0);
     Objects.push(Matter1);
     Objects.push(Matter2);
 
@@ -61,14 +89,24 @@ function changePositionOfObject(object){
 }
 
 function MoveEverything(){
+    console.log("number of objects: " + Matter.numOfObjects);   
     for (let i = 0; i < Matter.numOfObjects; i++){
         let acceleration = AccelerationOfObject(Objects[i]);
         changeSpeedOfObject(Objects[i], acceleration);
         changePositionOfObject(Objects[i]);
         changeGraphicPositionOfObject(Objects[i]);
+        console.log(Objects[i].Xpos, Objects[i].YPos);
     }
+    if (isRunning){
+    requestAnimationFrame(MoveEverything);
+    }
+    
 }
+MoveEverything();
+
+requestAnimationFrame(MoveEverything);
 
 function changeGraphicPositionOfObject(object){
     object.img.style.transform = `translate(${object.Xpos}px, ${object.YPos}px)`;
+
 }
